@@ -1,0 +1,12 @@
+.story-node .story-port.react-flow__handle-top{top:-8px!important}
+.story-node .story-port.react-flow__handle-bottom{bottom:-7px!important}
+.node-dialogue{max-height:340px;overflow:auto;overscroll-behavior:contain;padding:3px 14px 13px;scrollbar-width:thin;scrollbar-color:var(--fantasy-color-narrative-455c78,#455c78) transparent}
+.node-dialogue-line+.node-dialogue-line{border-top:1px solid var(--fantasy-color-narrative-30435d,#30435d);margin-top:11px;padding-top:11px}
+.node-dialogue-line .node-speaker{display:block;font-size:10px;font-weight:600;margin-bottom:5px}
+.node-dialogue-line p,.node-dialogue-empty{font-size:11px;line-height:1.8;color:var(--fantasy-color-narrative-b3c4da,#b3c4da);white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.node-dialogue-empty{color:var(--fantasy-color-narrative-8398b4,#8398b4)}
+.node-prerequisites{border-top:1px solid var(--fantasy-color-narrative-34465d,#34465d);padding:9px 10px 10px;display:flex;flex-direction:column;gap:5px}
+.node-prerequisites>small{color:var(--fantasy-color-narrative-a9afcc,#a9afcc);font-size:9px;margin:0 2px 2px}
+.node-prerequisite{width:100%;min-width:0;justify-content:flex-start;text-align:left;background:var(--fantasy-color-narrative-292e46,#292e46);border:1px solid var(--fantasy-color-narrative-444967,#444967);color:var(--fantasy-color-narrative-bbbfe1,#bbbfe1);padding:6px 7px;gap:5px;font-size:10px;line-height:1.6;white-space:normal}
+.node-prerequisite:hover{background:var(--fantasy-color-narrative-373d57,#373d57);border-color:var(--fantasy-color-narrative-747b9f,#747b9f);color:var(--fantasy-color-narrative-e0e6fc,#e0e6fc)}
+.node-prerequisite>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}

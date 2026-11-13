@@ -1,0 +1,1 @@
+"""Community knowledge vault."""

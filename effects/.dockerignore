@@ -1,0 +1,8 @@
+.env
+data
+tests
+node_modules
+.git
+*.tar.gz
+README.md
+操作手册.md

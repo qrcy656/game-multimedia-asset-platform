@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><script src="/portal-static/theme.js"></script><link rel="stylesheet" href="/portal-static/theme-controls.css"><link rel="stylesheet" href="/portal-static/theme-palette.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="世界观资料管理与可追溯的知识库问答">
+  <title>设定资料室 · 知识库</title>
+  <link rel="stylesheet" href="/knowledge/static/style.css">
+  <script src="/knowledge/static/vendor/marked.min.js" defer></script>
+  <script src="/knowledge/static/vendor/purify.min.js" defer></script>
+  <script src="/knowledge/static/app.js" defer></script>
+<script src="/community.js"></script></head>
+<body>
+  <div class="app-shell" id="app-shell" inert>
+    <header class="app-header">
+      <button class="icon-button mobile-menu" id="toggle-sidebar" aria-label="显示或隐藏资料目录" aria-expanded="false">☰</button>
+      <a class="brand" href="#" aria-label="设定资料室首页"><span class="brand-mark" aria-hidden="true">册</span><span><strong>设定资料室</strong><small>WORLD ARCHIVE</small></span></a>
+      <div class="header-description"></div>
+      <div class="header-actions"><span data-theme-slot></span><span class="connection" id="connection-state"><i></i><span>正在连接</span></span><button class="quiet-button" id="refresh-status">刷新状态</button><a class="quiet-button" id="return-home" href="/">返回主页</a><button class="quiet-button" id="logout">退出登录</button></div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar" id="sidebar" aria-label="资料目录">
+        <div class="sidebar-heading"><div><span class="eyebrow">DOCUMENTS</span><h2>原始资料 <span class="count" id="file-count">0</span></h2></div><button class="icon-button" id="refresh-files" aria-label="刷新资料列表" title="刷新资料列表">↻</button></div>
+        <label class="search-field"><span aria-hidden="true">⌕</span><input id="file-search" type="search" placeholder="搜索文件路径…" aria-label="搜索文件路径" autocomplete="off"></label>
+        <div class="file-actions"><button id="new-file" class="small-button">＋ 文档</button><button id="new-folder" class="small-button">＋ 目录</button><button id="import-open" class="small-button">导入</button></div>
+        <div class="folder-location"><span id="selected-folder" title="新建内容所在目录">根目录</span><button id="folder-rename" class="text-button" hidden>移动</button><button id="folder-delete" class="text-button danger-text" hidden>删除</button></div>
+        <div class="library-scroll"><div class="file-tree" id="file-tree" aria-label="Markdown 文件与文件夹"></div><section class="asset-section" aria-label="图片素材"><div class="asset-heading"><h3>图片素材 <span class="count" id="asset-count">0</span></h3><span>按需查看</span></div><p class="asset-hint">图片可直接查看与问答，无需向量化。</p><div id="asset-list" class="asset-list"></div></section></div>
+        <div class="index-panel"><div class="index-panel-heading"><strong>向量知识库</strong><span id="index-summary">读取中</span></div><p id="index-hint">原始文档保存后，需入库才能用于检索。</p><div class="index-actions"><button class="primary-button small" id="index-selected" disabled>选中入库 <span id="selection-count">0</span></button><button class="small-button" id="index-all">全库入库</button></div><div class="index-progress" id="index-progress" role="status" hidden></div></div>
+      </aside>
+      <main class="main-panel">
+        <div class="main-toolbar"><nav class="tabs" aria-label="工作区"><button id="tab-chat" class="tab active" data-tab="chat" aria-selected="true">知识问答</button><button id="tab-docs" class="tab" data-tab="docs" aria-selected="false">文档管理 <span id="dirty-tab" hidden>•</span></button></nav><div class="model-label" id="model-label">模型状态读取中</div></div>
+        <div id="notice" class="notice" role="status" hidden><span id="notice-text"></span><button class="icon-button" id="dismiss-notice" aria-label="关闭提示">×</button></div>
+        <section id="chat-view" class="chat-view" aria-label="知识问答">
+          <div class="chat-topline"><button class="text-button" id="clear-chat">清空会话</button></div>
+          <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions">
+            <div class="chat-welcome" id="chat-welcome"><div class="welcome-symbol" aria-hidden="true">✧</div><span class="eyebrow">KNOWLEDGE</span><h1>设定问答</h1><p>询问人物、地点、组织或设定之间的联系。<br>引用会标出文件、原文行号或图片。</p></div>
+          </div>
+          <form id="chat-form" class="composer-wrap"><div class="composer"><label for="chat-input" class="sr-only">向设定知识库提问</label><textarea id="chat-input" rows="2" placeholder="例如：这几个组织之间有哪些联系？" maxlength="2000"></textarea><div class="composer-bottom"><label class="checkbox-label"><input id="allow-read" type="checkbox" checked>允许按需读取原文与图片</label><button class="primary-button" id="send-chat" type="submit">发送 <span aria-hidden="true">↑</span></button></div></div><p class="composer-note">Enter 发送 · Shift + Enter 换行 · 回答请结合原文核对 · 会话仅保留在当前页面</p></form>
+        </section>
+        <section id="docs-view" class="docs-view" aria-label="文档管理" hidden>
+          <div id="document-empty" class="document-empty"><div class="empty-symbol" aria-hidden="true">▤</div><h2>文档管理</h2><p>从左侧选择文档，或新建、导入 Markdown 文件。<br>原始文档与向量知识库分别管理，保存后请及时入库。</p><button id="empty-new-file" class="primary-button">＋ 新建文档</button></div>
+          <div id="document-workspace" class="document-workspace" hidden>
+            <div class="document-header"><div class="document-title"><span class="eyebrow">MARKDOWN DOCUMENT</span><h2 id="document-name"></h2><p id="document-path"></p></div><span id="document-state" class="status-pill"></span></div>
+            <div class="editor-toolbar"><div class="editor-modes" aria-label="编辑器视图"><button class="mode-button" data-editor-mode="edit">编辑</button><button class="mode-button active" data-editor-mode="split">双栏</button><button class="mode-button" data-editor-mode="preview">预览</button></div><div class="document-actions"><span id="save-state">已保存</span><button class="small-button" id="move-file">重命名 / 移动</button><button class="small-button danger-text" id="delete-file">移至回收站</button><button class="small-button" id="index-document">此文档入库</button><button class="primary-button small" id="save-file" disabled>保存</button></div></div>
+            <div class="editor-panes mode-split" id="editor-panes"><div class="editor-pane"><div class="pane-label">MARKDOWN <span>Ctrl / ⌘ + S 保存</span></div><label for="document-editor" class="sr-only">Markdown 原文</label><textarea id="document-editor" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"></textarea></div><div class="preview-pane"><div class="pane-label">预览</div><article class="markdown-body" id="document-preview"></article></div></div>
+            <div class="document-links"><div><strong>文档链接</strong><div id="outgoing-links" class="link-list"></div></div><div><strong>反向链接</strong><div id="backlinks" class="link-list"></div></div></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div class="login-screen" id="login-screen">
+    <div class="login-card"><div class="brand"><span class="brand-mark" aria-hidden="true">册</span><span><strong>设定资料室</strong><small>WORLD ARCHIVE</small></span></div><span class="eyebrow">SIGN IN</span><h1>登录设定资料室</h1><p>管理 Markdown 文档、检索资料与查询来源。</p><form id="login-form"><label for="access-token">访问口令</label><input id="access-token" type="password" autocomplete="current-password" placeholder="输入服务器配置的访问口令" required><p class="form-error" id="login-error" role="alert" hidden></p><button class="primary-button" id="login-submit" type="submit">进入资料室 <span aria-hidden="true">→</span></button></form><p class="login-note">连接到你自己的知识库服务</p></div>
+  </div>
+  <dialog id="action-dialog" class="action-dialog"><form id="action-form"><div class="dialog-header"><h2 id="action-title"></h2><button type="button" class="icon-button" data-close-dialog="action-dialog" aria-label="关闭">×</button></div><p id="action-description" class="dialog-description"></p><label id="action-label" for="action-value">路径</label><input id="action-value" type="text" autocomplete="off" required><p id="action-error" class="form-error" role="alert" hidden></p><div class="dialog-footer"><button type="button" class="small-button" data-close-dialog="action-dialog">取消</button><button class="primary-button" id="action-submit" type="submit">确认</button></div></form></dialog>
+  <dialog id="import-dialog" class="action-dialog"><div class="dialog-header"><h2>导入 Markdown</h2><button class="icon-button" data-close-dialog="import-dialog" aria-label="关闭">×</button></div><p class="dialog-description">导入文件夹会保留嵌套目录。仅导入 .md 文件，已有同名文件会跳过；完成后需手动入库。</p><label for="import-prefix">存放目录（留空为根目录）</label><input id="import-prefix" type="text" placeholder="例如：世界设定" autocomplete="off"><div class="import-choices"><button class="small-button" id="choose-files">选择多个 .md 文件</button><button class="small-button" id="choose-folder">选择整个文件夹</button></div><p class="import-progress" id="import-progress" role="status"></p><div class="dialog-footer"><button class="small-button" data-close-dialog="import-dialog" id="import-close">完成</button></div></dialog>
+  <dialog id="source-dialog" class="source-dialog"><div class="dialog-header"><div><span class="eyebrow">SOURCE MATERIAL</span><h2 id="source-title">引用原文</h2></div><button class="icon-button" data-close-dialog="source-dialog" aria-label="关闭资料预览">×</button></div><p class="source-path" id="source-path"></p><div class="source-meta" id="source-meta"></div><p id="source-warning" class="source-warning" hidden></p><div id="source-content" class="source-content"></div><div class="dialog-footer"><button class="small-button" data-close-dialog="source-dialog">关闭</button><button class="primary-button small" id="source-open-document">在文档管理中打开</button></div></dialog>
+  <input id="import-files" type="file" accept=".md,text/markdown" multiple hidden>
+  <input id="import-folder" type="file" webkitdirectory multiple hidden>
+</body>
+</html>

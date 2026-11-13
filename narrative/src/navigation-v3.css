@@ -1,0 +1,5 @@
+.prerequisite-navigation{display:flex;align-items:center;gap:12px;flex:0 0 auto;padding:7px 22px;background:var(--fantasy-color-narrative-283047,#283047);border-bottom:1px solid var(--fantasy-color-narrative-445174,#445174);color:var(--fantasy-color-narrative-c6d3ee,#c6d3ee);font-size:11px;min-width:0}
+.prerequisite-navigation>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prerequisite-navigation>button{flex-shrink:0;padding:5px 9px;background:var(--fantasy-color-narrative-3a4867,#3a4867);font-size:11px}
+.import-source-tabs{flex-wrap:wrap}.import-source-tabs button{min-width:115px}
+@media(max-width:820px){.prerequisite-navigation{padding:6px 12px;gap:8px}.prerequisite-navigation>span{display:none}.prerequisite-navigation>button{font-size:10px}.import-source-tabs{gap:6px}.import-source-tabs button{min-width:100px;padding:9px}}

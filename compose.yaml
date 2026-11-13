@@ -1,0 +1,151 @@
+name: fantasy-community
+services:
+  app:
+    build: .
+    image: fantasy-community:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PORT:-18082}:8080"
+    env_file: .env
+    environment:
+      COMMUNITY_DATA_DIR: /data
+      DATABASE_URL: postgresql://fantasy:${POSTGRES_PASSWORD}@postgres:5432/fantasy
+      REDIS_URL: redis://redis:6379/0
+      ANIMATION_DATA_DIR: /data/animation
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:18082}
+      COMMUNITY_GITLAB_URL: ${COMMUNITY_GITLAB_URL:-http://localhost:18083}
+      COMMUNITY_GITLAB_INTERNAL_URL: ${COMMUNITY_GITLAB_INTERNAL_URL:-http://gitlab:80}
+      COMMUNITY_REPOSITORY_DEFAULT: ${COMMUNITY_REPOSITORY_DEFAULT:-managed}
+      COMMUNITY_GITLAB_BOOTSTRAP_FILE: /run/fantasy-gitlab/oauth.json
+      COMMUNITY_GITLAB_ADMIN_ACCOUNT_ID: ${COMMUNITY_GITLAB_ADMIN_ACCOUNT_ID:-}
+      COMMUNITY_EFFECTS_URL: http://effects:8080
+    volumes:
+      - ./data/app:/data
+      - gitlab-bootstrap:/run/fantasy-gitlab:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      effects: {condition: service_healthy}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  effects:
+    build: ./effects
+    image: fantasy-community-effects:local
+    restart: unless-stopped
+    init: true
+    user: "${EFFECTS_UID:-1000}:${EFFECTS_GID:-1000}"
+    environment:
+      EFFECTS_IDENTITY_SECRET: ${COMMUNITY_IDENTITY_SECRET}
+      PUBLIC_ORIGIN: ${APP_ORIGIN:-http://localhost:18082}
+      HOME_URL: ${APP_ORIGIN:-http://localhost:18082}
+      EFFECTS_BASE_PATH: /effects
+    volumes:
+      - ./data/effects:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1536m
+    cpus: 2.0
+    pids_limit: 96
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  animation-worker:
+    image: fantasy-community:local
+    restart: unless-stopped
+    command: [python, -m, animation.worker]
+    env_file: .env
+    environment:
+      COMMUNITY_DATA_DIR: /data
+      DATABASE_URL: postgresql://fantasy:${POSTGRES_PASSWORD}@postgres:5432/fantasy
+      REDIS_URL: redis://redis:6379/0
+      ANIMATION_DATA_DIR: /data/animation
+    volumes:
+      - ./data/app:/data
+    depends_on:
+      app: {condition: service_healthy}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fantasy
+      POSTGRES_DB: fantasy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U fantasy -d fantasy]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: [redis-server, --appendonly, "yes"]
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  gitlab:
+    profiles: [gitlab]
+    build:
+      context: ./gitlab
+      args:
+        GITLAB_IMAGE: ${GITLAB_IMAGE:-gitlab/gitlab-ce:19.4.7-ce.0}
+    image: fantasy-community-gitlab:local
+    restart: unless-stopped
+    hostname: gitlab
+    shm_size: 256m
+    environment:
+      COMMUNITY_GITLAB_URL: ${COMMUNITY_GITLAB_URL:-http://localhost:18083}
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:18082}
+      COMMUNITY_IDENTITY_SECRET: ${COMMUNITY_IDENTITY_SECRET}
+      COMMUNITY_GITLAB_ROOT_PASSWORD: ${COMMUNITY_GITLAB_ROOT_PASSWORD:-}
+      GITLAB_SSH_PORT: ${GITLAB_SSH_PORT:-12223}
+      GITLAB_POST_RECONFIGURE_SCRIPT: install -d -o git -g root -m 2770 /var/opt/fantasy-bootstrap && /opt/gitlab/bin/gitlab-rails runner /opt/fantasy/gitlab-bootstrap.rb
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url ENV.fetch('COMMUNITY_GITLAB_URL')
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = ENV.fetch('GITLAB_SSH_PORT').to_i
+        gitlab_rails['gitlab_signup_enabled'] = false
+        gitlab_rails['initial_root_password'] = ENV['COMMUNITY_GITLAB_ROOT_PASSWORD'] unless ENV['COMMUNITY_GITLAB_ROOT_PASSWORD'].to_s.empty?
+        prometheus_monitoring['enable'] = false
+        puma['worker_processes'] = 2
+        sidekiq['concurrency'] = 10
+    ports:
+      - "127.0.0.1:${GITLAB_HTTP_PORT:-18083}:80"
+      - "127.0.0.1:${GITLAB_SSH_PORT:-12223}:22"
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+      - gitlab-bootstrap:/var/opt/fantasy-bootstrap
+      - ./scripts/gitlab-bootstrap.rb:/opt/fantasy/gitlab-bootstrap.rb:ro
+    healthcheck:
+      test: [CMD, /opt/gitlab/bin/gitlab-healthcheck, --fail, --max-time, "10"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 180s
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  gitlab-bootstrap:

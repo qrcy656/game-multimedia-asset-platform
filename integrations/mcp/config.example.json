@@ -1,0 +1,10 @@
+{
+  "edition": "private",
+  "portal_url": "https://fantasy.example.internal:18443",
+  "gitlab_url": "https://fantasy.example.internal:18444",
+  "credentials_file": "./account.credentials.json",
+  "output_dir": "./downloads",
+  "upload_roots": ["./inputs"],
+  "timeout_seconds": 30,
+  "max_download_bytes": 536870912
+}

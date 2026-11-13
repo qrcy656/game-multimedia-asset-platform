@@ -1,0 +1,14 @@
+{
+  "edition": "community",
+  "portal_url": "http://localhost:18082",
+  "origin": "http://localhost:18082",
+  "module_urls": {},
+  "credential_type": "gitlab_pat",
+  "credentials_file": "./community.credentials.json",
+  "output_dir": "./downloads/community",
+  "upload_roots": [
+    "./inputs"
+  ],
+  "timeout_seconds": 30,
+  "max_download_bytes": 536870912
+}

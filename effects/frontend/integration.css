@@ -1,0 +1,35 @@
+/* Platform navigation surrounds the upstream editor without altering its panels. */
+body { display:flex; flex-direction:column; }
+#app { flex:1 1 auto; height:auto; min-height:0; }
+.fantasy-effects-nav {
+    display:flex; align-items:center; gap:16px; flex:0 0 auto;
+    min-height:48px; padding:9px 18px; background:var(--fantasy-color-effects-171d28,#171d28);
+    color:var(--fantasy-color-effects-e9edf5,#e9edf5); border-bottom:1px solid var(--fantasy-color-effects-364154,#364154); font-size:13px;
+}
+.fantasy-effects-brand { font-size:16px; color:var(--fantasy-color-effects-80dce1,#80dce1); white-space:nowrap; }
+.fantasy-effects-nav a, .fantasy-effects-nav button, .fantasy-effects-lock a {
+    color:var(--fantasy-color-effects-dce6f5,#dce6f5); border:1px solid var(--fantasy-color-effects-435068,#435068); border-radius:6px;
+    background:var(--fantasy-color-effects-242f40,#242f40); padding:6px 10px; cursor:pointer; text-decoration:none; white-space:nowrap;
+}
+.fantasy-effects-nav a:hover, .fantasy-effects-nav button:hover, .fantasy-effects-lock a:hover { background:var(--fantasy-color-effects-34445d,#34445d); }
+.fantasy-effects-nav a:focus-visible, .fantasy-effects-nav button:focus-visible, .fantasy-effects-lock a:focus-visible {
+    outline:2px solid var(--fantasy-color-effects-80dce1,#80dce1); outline-offset:3px;
+}
+.fantasy-effects-status { flex:1; color:var(--fantasy-color-effects-a7b9cc,#a7b9cc); font-size:12px; }
+.fantasy-effects-status[data-state="offline"] { color:var(--fantasy-color-effects-ffcf86,#ffcf86); }
+.fantasy-effects-status[data-state="locked"] { color:var(--fantasy-color-effects-ffb6b6,#ffb6b6); }
+.fantasy-effects-account { color:var(--fantasy-color-effects-b3c3d5,#b3c3d5); white-space:nowrap; }
+.fantasy-effects-lock {
+    position:fixed; inset:48px 0 0; z-index:2147483646; display:grid; place-items:center;
+    background:rgba(10, 14, 23, 0.95); color:var(--fantasy-color-effects-e9edf5,#e9edf5);
+}
+.fantasy-effects-lock[hidden] { display:none; }
+.fantasy-effects-lock-box { max-width:520px; padding:32px; border:1px solid var(--fantasy-color-effects-435068,#435068); border-radius:12px; background:var(--fantasy-color-effects-171d28,#171d28); }
+.fantasy-effects-lock h2 { font-size:22px; margin-bottom:18px; }
+.fantasy-effects-lock p { margin-bottom:16px; line-height:1.7; color:var(--fantasy-color-effects-b3c3d5,#b3c3d5); }
+.fantasy-effects-lock a { display:inline-block; margin-top:8px; }
+@media (max-width: 1000px) {
+    .fantasy-effects-nav { gap:8px; padding:8px; flex-wrap:wrap; }
+    .fantasy-effects-status { order:5; flex-basis:100%; }
+    .fantasy-effects-account { margin-left:auto; }
+}
